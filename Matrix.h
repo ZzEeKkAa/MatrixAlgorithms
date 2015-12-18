@@ -13,6 +13,7 @@ class AugmentedMatrix;
 #include "BaseMatrixMultiplication.h"
 #include "StrassenMatrixMultiplication.h"
 #include "JordanInverseMatrix.h"
+#include "Vector.h"
 #include <vector>
 #include <istream>
 #include <ostream>
@@ -193,9 +194,9 @@ public:
         return A;
     }
     Vector<T> getB() const{
-        Vector<T> ans(getM());
-        for(int i=0; i<getM(); ++i)
-            ans(i)=(*this)(i,getN()-1);
+        Vector<T> ans(Matrix<T>::getM());
+        for(int i=0; i<Matrix<T>::getM(); ++i)
+            ans(i)=(*this)(i,Matrix<T>::getN()-1);
         return ans;
     }
 
@@ -214,7 +215,7 @@ public:
         return out;
     }
 
-    operator Matrix(){ return Matrix(); }
+    operator Matrix<T>(){ return Matrix<T>(); }
 };
 
 #endif //MATRIXALGORITHMS_MATRIX_H
