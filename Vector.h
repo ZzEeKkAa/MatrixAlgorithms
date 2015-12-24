@@ -18,7 +18,7 @@ public:
     Vector(int n=0){
         v.resize(n,0);
     }
-    Vector(Vector<T>& V){
+    Vector(Vector<T> const & V){
         v=V.v;
     }
 
@@ -29,7 +29,7 @@ public:
         return v.size();
     }
 
-    T operator()(int i){
+    T& operator()(int i){
         return v[i];
     }
     T operator()(int i) const{
@@ -51,13 +51,27 @@ public:
         }
         return ans;
     }
-    Vector<T> operator*(Matrix<T> const & A){
-        if(A.getM()!=v.size()) return Vector<T>();
+    Vector<T> operator*(Matrix<T> const & A) const {
+        if (A.getM() != v.size()) return Vector<T>();
         Vector<T> V(A.getN());
-        for(int j=0; j<A.getN(); ++j)
-            for(int i=0; i<A.getM(); ++i)
-                V(j)+=A(i,j)*v[i];
+        for (int j = 0; j < A.getN(); ++j)
+            for (int i = 0; i < A.getM(); ++i)
+                V(j) += A(i, j) * v[i];
         return V;
+    }
+    T operator*(Vector<T> const & V) const {
+        T ans=0;
+        int n=this->getN()>V.getN()?V.getN():this->getN();
+        for(int i=0; i<n; ++i){
+            ans+=v[i]*V(i);
+        }
+        return ans;
+    }
+    Vector<T> const & operator-=(Vector<T> const & V){
+        if(V.getN()>getN()) setN(V.getN());
+        for(int i=0; i<V.getN(); ++i)
+            v[i]-=V(i);
+        return *this;
     }
 
     template <typename T0>
@@ -66,8 +80,18 @@ public:
         Vector<T0> V1(A.getM());
         for(int j=0; j<A.getN(); ++j)
             for(int i=0; i<A.getM(); ++i)
-                V(i)+=A(i,j)*V(j);
-        return V;
+                V1(i)+=A(i,j)*V(j);
+        return V1;
+    }
+
+    template <typename T0>
+    friend std::ostream& operator<<(std::ostream& out, Vector<T0>const &V) {
+        out<<"(";
+        for(auto&e:V.v){
+            out<<e<<" ";
+        }
+        out<<")";
+        return out;
     }
 
     Vector<T> const & operator=(Vector<T> const & V){
@@ -76,7 +100,7 @@ public:
     }
 };
 
-template <typename T>
+/*template <typename T>
 T product(Vector<T> const & v1, Vector<T> const & v2){
     T ans=0;
     int n=v1.getN()>v2.getN()?v2.getN():v1.getN();
@@ -84,11 +108,11 @@ T product(Vector<T> const & v1, Vector<T> const & v2){
         ans+=v1(i)*v2(i);
     }
     return ans;
-}
+}*/
 
 template <typename T>
-T project(Vector<T> const & a, Vector<T> const & e){
-    return e*(product(e,a)/product(e,e));
+Vector<T> project(Vector<T> const & e, Vector<T> const & a){
+    return e*((e*a)/(e*e));
 }
 
 template <typename T>
@@ -96,6 +120,7 @@ T norm(Vector<T> const & v){
     T ans = 0;
     for(int i=0; i<v.getN(); ++i)
         ans+=v(i)*v(i);
+    ans=sqrt(ans);
     return ans;
 }
 

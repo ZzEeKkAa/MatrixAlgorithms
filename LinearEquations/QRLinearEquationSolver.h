@@ -11,13 +11,18 @@
 
 template<typename T>
 class QRLinearEquationSolver: public LinearEquationSolver<T> {
-    QRDecomposition<T> decomposition;
-    QRLinearEquationSolver(QRDecomposition<T> decomposition){
+private:
+    QRDecomposition<T>* decomposition;
+public:
+    QRLinearEquationSolver(QRDecomposition<T>* decomposition){
         QRLinearEquationSolver::decomposition=decomposition;
     }
     virtual Vector<T> solve(AugmentedMatrix<T> const &A) override{
-        decomposition.decompose(A.getA());
-        return ~decomposition.getR() * transpose(decomposition.getQ()) * A.getB();
+        decomposition->decompose(A.getA());
+        return ~decomposition->getR() * transpose(decomposition->getQ()) * A.getB();
+    }
+    virtual ~QRLinearEquationSolver(){
+        delete decomposition;
     }
 };
 

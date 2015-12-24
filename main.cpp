@@ -1,4 +1,6 @@
 #include <bits/stdc++.h>
+#include "QRLinearEquationSolver.h"
+#include "GramSchmidtProcess.h"
 #include "StrassenMatrixMultiplication.h"
 #include "Matrix.h"
 #include "JordanInverseMatrix.h"
@@ -9,7 +11,7 @@ using namespace std;
 
 
 int main() {
-    freopen("C:\\Users\\Zeka\\ClionProjects\\MatrixAlgorithms\\input.txt","r",stdin);
+    /*freopen("C:\\Users\\Zeka\\ClionProjects\\MatrixAlgorithms\\input.txt","r",stdin);
     Matrix<double> a,b;
     cin>>a>>b;
     cout<<a*b<<endl;
@@ -30,7 +32,7 @@ int main() {
     B(0,0) = 3; B(0,1) = 5; B(0,2) = 7;
     B(1,0) = 4; B(1,1) = 6; B(1,2) = 8;*/
 
-    cout<<"Base multiplication: "<<endl<<A*B<<endl;
+    /*cout<<"Base multiplication: "<<endl<<A*B<<endl;
 
     Matrix<double>::setDefaultMultiplication(new StrassenMatrixMultiplication<double>());
     cout<<"Strassen multiplication: "<<endl<<A*B<<endl;
@@ -57,5 +59,22 @@ int main() {
     cout<<"A*A^-1 = "<<endl<<K*K1<<endl;
     cout<<"A^-1*A = "<<endl<<K1*K<<endl;
 /**/
+
+    cout<<"strated..."<<endl;
+    Matrix<long double> L(3,4);
+
+    L(0,0) = 12; L(0,1) = -51; L(0,2) = 4;   L(0,3)=1;
+    L(1,0) = 6;  L(1,1) = 167; L(1,2) = -68; L(1,3)=2;
+    L(2,0) = -4; L(2,1) = 24;  L(2,2) = -41; L(2,3)=3;
+
+    AugmentedMatrix<long double> aL = L;
+
+    cout<<aL<<endl;
+
+    auto leSolver = new QRLinearEquationSolver<long double>(new GramSchmidtProcess<long double>());
+
+    auto result = leSolver->solve(aL);
+    cout<<"Solution: "<<result<<endl;
+
     return 0;
 }

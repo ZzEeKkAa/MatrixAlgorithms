@@ -10,6 +10,7 @@
 
 template <typename T>
 class LinearEquationSolver {
+public:
     virtual Vector<T> solve(AugmentedMatrix<T> const & A)=0;
 };
 

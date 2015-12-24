@@ -22,7 +22,7 @@ class AugmentedMatrix;
 
 template <typename T>
 class Matrix {
-private:
+protected:
     int m, n;
     std::vector<std::vector<T> > matrix;
     static MatrixMultiplication<T>* multiplication;
@@ -74,6 +74,28 @@ public:
                 matrix[k][i]=matrix[k][j];
                 matrix[k][j]=tmp;
             }
+    }
+
+    Vector<T> getRow(int i) const{
+        Vector<T> v(n);
+        for(int j=0; j<n; ++j)
+            v(j)=matrix[i][j];
+        return v;
+    }
+    Vector<T> getColumn(int i) const{
+        Vector<T> v(m);
+        for(int j=0; j<m; ++j)
+            v(j)=matrix[j][i];
+        return v;
+    }
+
+    void setRow(int i, Vector<T> const & V){
+        for(int j=0; j<n; ++j)
+            matrix[i][j]=V(j);
+    }
+    void setColumn(int i, Vector<T> const & V){
+        for(int j=0; j<m; ++j)
+            matrix[j][i]=V(j);
     }
 
     static void setDefaultMultiplication(MatrixMultiplication<T>* multiplication){
@@ -131,9 +153,10 @@ public:
     friend std::ostream& operator<<(std::ostream& out, Matrix<T0>const &A){
         for(int i=0; i<A.m; ++i){
             for(int j=0; j<A.n; ++j){
-                /*out.width(4);
-                out<<A.matrix[i][j];*/
-                printf("%5.2lf",A.matrix[i][j]);
+                out.width(7);
+                out.precision(2);
+                out<<std::fixed;
+                out<<A.matrix[i][j];
             }
             out<<std::endl;
         }
@@ -188,6 +211,23 @@ Matrix<T> transpose(Matrix<T> const & A){
 template <typename T>
 class AugmentedMatrix:public Matrix<T>{
 public:
+    AugmentedMatrix(Matrix<T> const & A){
+        this->n=A.getN();
+        this->m=A.getM();
+        this->matrix.assign(this->m,std::vector<T>(this->n,0));
+        for(int i=0; i<this->m; ++i)
+            for(int j=0; j<this->n; ++j)
+                this->matrix[i][j]=A(i,j);
+    }
+    AugmentedMatrix& operator=(Matrix<T> const & A){
+        this->n=A.getN();
+        this->m=A.getM();
+        this->matrix.assign(this->m,std::vector<T>(this->n,0));
+        for(int i=0; i<this->m; ++i)
+            for(int j=0; j<this->n; ++j)
+                this->matrix[i][j]=A(i,j);
+        return *this;
+    }
     Matrix<T> getA() const{
         Matrix<T> A(*this);
         A.setN(A.getN()-1);
@@ -196,17 +236,18 @@ public:
     Vector<T> getB() const{
         Vector<T> ans(Matrix<T>::getM());
         for(int i=0; i<Matrix<T>::getM(); ++i)
-            ans(i)=(*this)(i,Matrix<T>::getN()-1);
+            ans(i)=this->matrix[i][Matrix<T>::getN()-1];
         return ans;
     }
 
     template <typename T0>
-    friend std::ostream& operator<<(std::ostream& out, Matrix<T0>const &A){
+    friend std::ostream& operator<<(std::ostream& out, AugmentedMatrix<T0>const &A) {
         for(int i=0; i<A.m; ++i){
             for(int j=0; j<A.n; ++j){
-                /*out.width(4);
-                out<<A.matrix[i][j];*/
-                printf("%5.2lf",A.matrix[i][j]);
+                out.width(7);
+                out.precision(2);
+                out<<std::fixed;
+                out<<A.matrix[i][j];
                 if(j+2==A.n) printf("|");
             }
 

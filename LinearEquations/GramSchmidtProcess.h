@@ -6,6 +6,7 @@
 #define MATRIXALGORITHMS_GRAMSCHMIDTPROCESS_H
 
 
+#include <math.h>
 #include "QRDecomposition.h"
 
 template <typename T>
@@ -17,11 +18,24 @@ public:
             Matrix<T>();
         }
         const int n = A.getM();
-        Q=A;
-        R=Matrix<T>(n,n);
-        for(int i=0; i<n; ++i){
 
+        std::vector<Vector<T> > q;
+        for(int i=0; i<n; ++i)
+            q.push_back(A.getColumn(i));
+        this->R=Matrix<T>(n,n);
+
+        std::cout<<q[0]/norm(q[0])<<std::endl;
+
+        for(int i=0; i<n; ++i){
+            for(int j=0; j<i; ++j){
+                q[i]-=project(q[j],q[i]);
+            }
         }
+
+        this->Q.setM(n);
+        this->Q.setN(n);
+        for(int i=0; i<n; ++i) this->Q.setColumn(i,q[i]/norm(q[i]));
+        this->R=transpose(this->Q)*A;
     }
 };
 
